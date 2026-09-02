@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#173e2f">
+<title>Habitly Pro — Habit System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+:root{
+ --bg:#f5f7f4;--surface:#fff;--soft:#eef2ee;--ink:#1d2822;--muted:#78817b;--line:#e4e9e4;
+ --green:#255d46;--deep:#173e2f;--lime:#dff2b4;--blue:#dce9fa;--pink:#f5dce8;--yellow:#faedc5;
+ --shadow:0 18px 55px rgba(25,53,39,.09);--radius:22px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:244px 1fr;min-height:100vh}
+.sidebar{height:100vh;position:sticky;top:0;background:var(--deep);color:white;padding:26px 15px;display:flex;flex-direction:column}
+.logo{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;padding:7px 10px 38px}.mark{width:35px;height:35px;border-radius:12px;background:var(--lime);color:var(--deep);display:grid;place-items:center}
+.nav-label{font-size:10px;letter-spacing:1.5px;color:#90a79b;margin:0 12px 10px;text-transform:uppercase}.nav button{border:0;width:100%;background:transparent;color:#b6c9bd;padding:12px;border-radius:12px;text-align:left;display:flex;gap:12px;align-items:center;margin-bottom:4px;font-weight:600}.nav button.active,.nav button:hover{background:#ffffff14;color:#fff}.icon{width:20px;text-align:center}
+.side-foot{margin-top:auto;padding:15px;background:#ffffff0d;border-radius:18px}.side-foot b{font-size:13px}.side-foot p{font-size:11px;color:#a8bbb0;line-height:1.5}.autosave-side{display:flex;align-items:center;gap:7px;color:#b9d8c4;font-size:11px}.pulse{width:7px;height:7px;background:#9fe3b7;border-radius:50%;animation:pulse 1.7s infinite}@keyframes pulse{50%{transform:scale(1.8);opacity:.35}}
+.main{max-width:1480px;width:100%;margin:auto;padding:28px 40px 55px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.eyebrow{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.7px}.top h1{font-family:"Playfair Display",serif;margin:4px 0 0;font-size:31px}.status{display:flex;gap:10px;align-items:center}.save-status{font-size:11px;color:var(--muted);background:white;border:1px solid var(--line);padding:10px 13px;border-radius:12px}.avatar{width:42px;height:42px;border-radius:50%;background:#d7ead9;color:var(--green);display:grid;place-items:center;font-weight:700}
+.page{display:none}.page.active{display:block}.hero{position:relative;overflow:hidden;min-height:190px;border-radius:28px;background:linear-gradient(110deg,#173e2f,#347459);color:#fff;padding:33px 38px;margin-bottom:20px}.hero:after{content:"";position:absolute;width:300px;height:300px;border:50px solid #dff2b425;border-radius:50%;right:-80px;top:-150px}.hero h2{font-family:"Playfair Display",serif;font-size:37px;line-height:1.12;margin:8px 0;max-width:650px}.hero p{color:#c7ded0;font-size:14px;max-width:590px;line-height:1.6}.month-badge{position:absolute;right:35px;bottom:28px;background:var(--lime);color:var(--deep);padding:10px 15px;border-radius:99px;font-size:12px;font-weight:700;z-index:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}.stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:19px}.stat-row{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;letter-spacing:.8px;font-weight:700;text-transform:uppercase}.badge-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:16px}.bi1{background:var(--blue)}.bi2{background:var(--pink)}.bi3{background:var(--lime)}.bi4{background:var(--yellow)}.big{font-size:30px;font-weight:700;margin-top:16px}.small{font-size:11px;color:var(--muted);margin-top:3px}
+.dashboard-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:20px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 5px 20px #1c392a05}.head{display:flex;align-items:start;justify-content:space-between;margin-bottom:18px}.title{font-weight:700;font-size:14px}.sub{font-size:11px;color:var(--muted);margin-top:4px}
+.progress-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.progress-card{border:1px solid var(--line);border-radius:18px;padding:16px;text-align:center;background:#fcfdfc}.progress-card h4{margin:0 0 10px;font-size:12px}.donut{--p:0;--c:var(--green);width:110px;height:110px;border-radius:50%;margin:auto;background:conic-gradient(var(--c) calc(var(--p)*1%),#edf0ed 0);display:grid;place-items:center}.donut:after{content:"";width:80px;height:80px;background:white;border-radius:50%;grid-area:1/1}.donut b{z-index:1;font-size:19px}.donut-note{font-size:10px;color:var(--muted);margin-top:10px}
+.chart{height:235px;display:flex;align-items:end;gap:7px;padding:0 3px;border-bottom:1px solid var(--line)}.chart-col{height:100%;flex:1;display:flex;align-items:center;justify-content:end;flex-direction:column}.chart-bar{width:100%;max-width:17px;border-radius:8px 8px 2px 2px;background:linear-gradient(#8bc3a2,#255d46);min-height:4px;transition:.3s}.day-label{height:17px;font-size:8px;color:#9ba39d;margin-top:7px}
+.today-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;margin-top:20px}.due-list{display:grid;gap:10px}.due-item{padding:13px;border:1px solid var(--line);border-radius:14px;display:flex;align-items:center;justify-content:space-between}.due-left{display:flex;align-items:center;gap:10px}.due-check{width:21px;height:21px;accent-color:var(--green)}.due-item.done{opacity:.55;text-decoration:line-through}
+.aquarium{position:relative;height:270px;border-radius:22px;overflow:hidden;background:linear-gradient(#dff1f3,#75b7cb 65%,#3c8aa4);box-shadow:inset 0 0 45px #ffffff55}.water-glow{position:absolute;inset:0;background:radial-gradient(circle at 20% 5%,#fff9,transparent 35%)}.sand{position:absolute;bottom:0;width:100%;height:38px;background:#e9d5a3;border-radius:50% 50% 0 0/20% 20% 0 0}.plant{position:absolute;bottom:26px;width:8px;height:90px;background:#3f826b;border-radius:90% 0 90% 0;transform-origin:bottom;animation:sway 3s ease-in-out infinite}.plant:before,.plant:after{content:"";position:absolute;width:35px;height:9px;background:#55a078;border-radius:100%;transform:rotate(-30deg)}.plant:before{left:-24px;top:25px}.plant:after{left:5px;top:48px;transform:rotate(28deg)}.p1{left:22px}.p2{right:30px;height:70px;animation-delay:-1.4s}@keyframes sway{50%{transform:rotate(5deg)}}.bubble{position:absolute;border:2px solid #fff8;border-radius:50%;animation:rise linear infinite}.fish{position:absolute;width:42px;height:22px;border-radius:55% 45% 45% 55%;animation:swim 10s linear infinite;filter:drop-shadow(0 4px 5px #17423133)}.fish:after{content:"";position:absolute;right:-12px;top:4px;border-left:14px solid currentColor;border-top:7px solid transparent;border-bottom:7px solid transparent}.fish span{position:absolute;right:8px;top:5px;width:4px;height:4px;border-radius:50%;background:#25302b}.fish.f1{top:45px;left:-50px;background:#ffaf75;color:#ffaf75;animation-duration:11s}.fish.f2{top:120px;left:-80px;background:#f7d56d;color:#f7d56d;animation-delay:-5s;animation-duration:13s}.fish.f3{top:190px;left:-40px;background:#ff8db2;color:#ff8db2;animation-delay:-8s;animation-duration:9s}@keyframes swim{to{transform:translateX(calc(100vw + 100px))}}.aquarium-caption{position:absolute;left:18px;top:16px;color:#174231;font-weight:700;font-size:13px;background:#ffffffb8;backdrop-filter:blur(5px);padding:8px 11px;border-radius:10px}.aquarium-caption small{display:block;color:#557067;font-weight:500;font-size:10px;margin-top:2px}
+.top-list{display:grid;gap:13px}.habit-line{display:grid;grid-template-columns:1fr 42px;gap:10px}.track{height:7px;background:#edf1ed;border-radius:99px;overflow:hidden;margin-top:7px}.fill{height:100%;background:var(--green);border-radius:99px}.habit-line small{font-size:12px}.habit-line b{font-size:12px;align-self:center;text-align:right}
+.tracker-top{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}.tracker-top h2,.settings-title{font-family:"Playfair Display",serif;font-size:34px;margin:0}.tracker-top p{font-size:13px;color:var(--muted);margin:7px 0}.controls{display:flex;gap:8px}.controls select,.controls button{padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:#fff;font-weight:600}.controls button,.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.tracker-card{padding:0;overflow:auto}.table{width:100%;border-collapse:collapse;min-width:960px}.table th{height:55px;background:#fafcfa;border-bottom:1px solid var(--line);font-size:10px;color:var(--muted);text-transform:uppercase}.table th:first-child{padding-left:22px;text-align:left;width:240px}.table td{height:55px;text-align:center;border-bottom:1px solid #eef1ee}.table td:first-child{text-align:left;padding-left:22px;font-size:13px;font-weight:600}.weekend{background:#faf8f5}.today-col{background:#e7f3df!important}.check{appearance:none;width:22px;height:22px;border:1.5px solid #d7ded9;border-radius:7px;background:white}.check:checked{background:var(--green);border-color:var(--green)}.check:checked:after{content:"✓";color:#fff;font-weight:800;line-height:19px;font-size:13px;display:block}.rate{font-weight:700;font-size:12px;color:var(--green)}
+.settings-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.habit-input{display:block;width:100%;padding:13px;border:1px solid var(--line);border-radius:11px;margin-bottom:9px}.primary,.danger{padding:12px 15px;border-radius:11px;border:0;font-weight:700}.danger{background:#fbe8e8;color:#a23e3e}.note{font-size:13px;color:var(--muted);line-height:1.6}
+
+.month-history{margin-top:20px}
+.history-card{padding:24px;overflow:hidden}
+.history-scroll{overflow-x:auto;padding:8px 0 4px}
+.history-chart{min-width:780px;height:300px;display:flex;align-items:flex-end;gap:6px;padding:25px 8px 0;border-bottom:1px solid var(--line)}
+.history-day{height:100%;flex:1;min-width:17px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;position:relative}
+.history-bar-wrap{height:235px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.history-bar{width:100%;max-width:22px;height:5px;min-height:5px;border:0;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#9ec8b0,#255d46);cursor:pointer;transition:height .55s cubic-bezier(.2,.8,.2,1),transform .18s,filter .18s,box-shadow .18s}
+.history-bar:hover,.history-bar.selected{transform:translateY(-5px);filter:brightness(1.08);box-shadow:0 8px 18px rgba(37,93,70,.22)}
+.history-bar.selected{outline:3px solid #dff2b4}
+.history-label{font-size:9px;color:var(--muted);font-weight:600}
+.day-details{margin-top:22px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fcfdfc;min-height:145px}
+.day-details-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.day-details-head b{font-size:14px}.day-score{font-size:11px;background:var(--lime);color:var(--deep);padding:7px 10px;border-radius:99px;font-weight:700}
+.day-detail-grid{display:grid;grid-template-columns:1fr 1fr}
+.day-detail-col{padding:17px 19px}.day-detail-col+ .day-detail-col{border-left:1px solid var(--line)}
+.day-detail-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:10px;color:var(--muted)}
+.detail-habit{display:flex;align-items:center;gap:9px;font-size:12px;padding:5px 0}
+.detail-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}.detail-dot.done{background:#4f9b72}.detail-dot.missed{background:#e3a2b8}
+.empty-day{font-size:12px;color:var(--muted);padding:7px 0}
+@media(max-width:720px){.history-card{padding:17px}.history-chart{min-width:650px;height:270px}.history-bar-wrap{height:205px}.day-detail-grid{grid-template-columns:1fr}.day-detail-col+.day-detail-col{border-left:0;border-top:1px solid var(--line)}}
+
+.toast{position:fixed;right:22px;bottom:22px;background:#1e2d25;color:white;padding:13px 17px;border-radius:12px;box-shadow:var(--shadow);font-size:12px;opacity:0;transform:translateY(90px);transition:.25s;z-index:100}.toast.show{opacity:1;transform:none}
+@media(max-width:1050px){.app{grid-template-columns:72px 1fr}.sidebar{padding:20px 10px}.logo span,.nav button span,.nav-label,.side-foot{display:none}.logo{justify-content:center}.nav button{justify-content:center}.main{padding:25px}.stats{grid-template-columns:repeat(2,1fr)}.today-layout{grid-template-columns:1fr}}
+@media(max-width:720px){.app{display:block}.sidebar{position:fixed;z-index:20;bottom:0;top:auto;height:66px;width:100%;padding:6px;display:block}.logo{display:none}.nav{display:flex;justify-content:center;gap:10px}.nav button{width:auto;padding:10px 17px}.main{padding:18px 13px 88px}.top h1{font-size:25px}.hero{padding:28px 23px}.hero h2{font-size:30px}.month-badge{position:static;display:inline-block;margin-top:13px}.stats{grid-template-columns:1fr 1fr}.dashboard-grid,.settings-grid{grid-template-columns:1fr}.progress-cards{grid-template-columns:1fr}.tracker-top{display:block}.controls{margin-top:15px;flex-wrap:wrap}}
+
+/* Performance optimisations */
+.page{content-visibility:auto;contain-intrinsic-size:900px}
+.card,.history-card{contain:layout style}
+.chart-bar,.history-bar,.fill{will-change:height,width;transform:translateZ(0)}
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* Authentication */
+#loginScreen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top left,#e4f4db 0,transparent 38%),radial-gradient(circle at bottom right,#dcebe3 0,transparent 35%),#f5f7f4}
+.login-card{width:min(100%,460px);padding:42px 34px;border:1px solid rgba(30,70,50,.08);border-radius:30px;background:rgba(255,255,255,.94);box-shadow:0 30px 80px rgba(26,55,42,.16);text-align:center;animation:loginIn .5s ease both}
+.login-mark{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;margin:0 auto 24px;background:#1e4d3a;color:#dff2b4;font-size:34px;font-weight:800;box-shadow:0 14px 30px rgba(30,77,58,.22)}
+.login-card h1{margin:0;color:#1d3026;font-size:34px;letter-spacing:-1.3px}
+.login-card p{margin:12px auto 28px;max-width:330px;color:#718078;line-height:1.6;font-size:14px}
+.google-login{width:100%;min-height:54px;border:1px solid #dbe3dd;border-radius:15px;background:#fff;color:#26382e;font:inherit;font-weight:700;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
+.google-login:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(30,55,42,.10);border-color:#b9c9be}
+.google-login:disabled{opacity:.7;cursor:wait;transform:none}
+.google-g{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:800;background:conic-gradient(#4285f4 0 25%,#34a853 0 50%,#fbbc05 0 75%,#ea4335 0)}
+.google-g span{width:12px;height:12px;border-radius:50%;background:#fff;display:block}
+.login-note{margin-top:18px!important;font-size:11px!important;color:#8a9690!important}
+.auth-error{min-height:18px;margin-top:14px;color:#b64b5b;font-size:12px}
+#appShell{display:none}
+.user-menu{display:flex;align-items:center;gap:10px}
+.user-name{font-size:12px;font-weight:700;color:#415148;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{overflow:hidden;background:#dff2b4!important;color:#1e4d3a!important}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.logout-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 10px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;color:#506058}
+.logout-btn:hover{background:#f5f7f4}
+@keyframes loginIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+
+</style>
+</head>
+<body>
+<section id="loginScreen" aria-label="Habitly login">
+  <div class="login-card">
+    <div class="login-mark">✓</div>
+    <h1>Welcome to Habitly</h1>
+    <p>Build better days, one habit at a time. Sign in to enter your personal habit dashboard.</p>
+    <button id="googleLogin" class="google-login" type="button">
+      <span class="google-g" aria-hidden="true"><span></span></span>
+      <span id="googleLoginText">Continue with Google</span>
+    </button>
+    <div id="authError" class="auth-error"></div>
+    <button id="retryCloud" class="google-login" type="button" style="display:none;margin-top:6px;">Retry connecting</button>
+    <p class="login-note">Secure sign-in powered by Google and Firebase Authentication.</p>
+  </div>
+</section>
+<div id="appShell">
+<div class="app">
+<aside class="sidebar">
+ <div class="logo"><div class="mark">✓</div><span>habitly</span></div>
+ <div class="nav">
+  <p class="nav-label">Workspace</p>
+  <button class="active" data-page="dashboard"><i class="icon">▦</i><span>Dashboard</span></button>
+  <button data-page="tracker"><i class="icon">✓</i><span>Habit tracker</span></button>
+  <p class="nav-label">Manage</p>
+  <button data-page="settings"><i class="icon">⚙</i><span>Settings</span></button>
+ </div>
+ <div class="side-foot"><b>Automatic saving</b><p>Your changes are safely saved every 15 seconds and when you leave.</p><div class="autosave-side"><i class="pulse"></i><span id="sideSave">Waiting for changes</span></div></div>
+</aside>
+<main class="main">
+<div class="top"><div><div class="eyebrow" id="dateLine"></div><h1 id="greeting"></h1></div><div class="status"><div class="save-status" id="saveStatus">● All changes saved</div><div class="user-menu"><span class="user-name" id="userName">Habitly user</span><div class="avatar" id="userAvatar">H</div><button class="logout-btn" id="logoutBtn" type="button">Log out</button></div></div></div>
+
+<section class="page active" id="dashboard">
+ <div class="hero"><div class="eyebrow" style="color:#b8d4c4">YOUR HABIT ECOSYSTEM</div><h2>See your day, week and month in one calm place.</h2><p>Three different time scales. One less excuse for pretending you forgot what you were supposed to do.</p><div class="month-badge" id="monthBadge"></div></div>
+ <div class="stats">
+  <div class="stat"><div class="stat-row">Completed <span class="badge-icon bi1">✓</span></div><div class="big" id="doneCount">0</div><div class="small">checkmarks this month</div></div>
+  <div class="stat"><div class="stat-row">Due today <span class="badge-icon bi2">◷</span></div><div class="big" id="dueTodayCount">0</div><div class="small">habits still swimming around</div></div>
+  <div class="stat"><div class="stat-row">Best streak <span class="badge-icon bi3">⚡</span></div><div class="big" id="bestStreak">0</div><div class="small">consecutive active days</div></div>
+  <div class="stat"><div class="stat-row">This week <span class="badge-icon bi4">↗</span></div><div class="big" id="weekRate">0%</div><div class="small">weekly completion rate</div></div>
+ </div>
+
+ <div class="dashboard-grid">
+  <div class="card"><div class="head"><div><div class="title">Progress at every scale</div><div class="sub">Daily, weekly and monthly completion</div></div></div>
+   <div class="progress-cards">
+    <div class="progress-card"><h4>Today</h4><div class="donut" id="dailyDonut" style="--c:#5d8fcb"><b id="dailyPct">0%</b></div><div class="donut-note" id="dailyNote">0 of 0 completed</div></div>
+    <div class="progress-card"><h4>This week</h4><div class="donut" id="weeklyDonut" style="--c:#d47da6"><b id="weeklyPct">0%</b></div><div class="donut-note" id="weeklyNote">0 of 0 completed</div></div>
+    <div class="progress-card"><h4>This month</h4><div class="donut" id="monthlyDonut" style="--c:#255d46"><b id="monthlyPct">0%</b></div><div class="donut-note" id="monthlyNote">0 of 0 completed</div></div>
+   </div>
+  </div>
+  <div class="card"><div class="head"><div><div class="title">Monthly activity</div><div class="sub">Completed habits each day</div></div></div><div class="chart" id="chart"></div></div>
+ </div>
+
+ <div class="today-layout">
+  <div class="card"><div class="head"><div><div class="title">Due today</div><div class="sub">The things Future You is quietly hoping Present You handles.</div></div></div><div class="due-list" id="dueList"></div></div>
+  <div class="aquarium"><div class="water-glow"></div><div class="aquarium-caption">Today's aquarium<small id="aquariumText">Loading today's habits...</small></div>
+   <div class="fish f1"><span></span></div><div class="fish f2"><span></span></div><div class="fish f3"><span></span></div>
+   <div class="plant p1"></div><div class="plant p2"></div>
+   <div class="bubble" style="left:15%;bottom:30px;width:12px;height:12px;animation-duration:6s"></div>
+   <div class="bubble" style="left:48%;bottom:30px;width:8px;height:8px;animation-duration:8s;animation-delay:-3s"></div>
+   <div class="bubble" style="left:75%;bottom:30px;width:16px;height:16px;animation-duration:7s;animation-delay:-5s"></div>
+   <div class="sand"></div>
+  </div>
+ </div>
+
+ <div class="dashboard-grid" style="margin-top:20px">
+  <div class="card"><div class="head"><div><div class="title">Habit performance</div><div class="sub">Your most consistent habits</div></div></div><div class="top-list" id="performance"></div></div>
+  <div class="card"><div class="head"><div><div class="title">Top habits</div><div class="sub">The current overachievers</div></div></div><div class="top-list" id="topHabits"></div></div>
+ </div>
+
+ <div class="month-history">
+  <div class="card history-card">
+   <div class="head">
+    <div>
+     <div class="title">Your month, day by day</div>
+     <div class="sub">Each bar grows directly with the number of habits completed that day. Tap a bar for the full record.</div>
+    </div>
+    <div class="sub" id="historyMonthLabel"></div>
+   </div>
+   <div class="history-scroll"><div class="history-chart" id="historyChart"></div></div>
+   <div class="day-details" id="dayDetails"></div>
+  </div>
+ </div>
+</section>
+
+<section class="page" id="tracker">
+ <div class="tracker-top"><div><h2>Habit tracker</h2><p>Track every habit by day. Weekly and monthly progress update automatically.</p></div><div class="controls"><select id="monthSelect"></select><select id="yearSelect"></select><button id="todayBtn">Today</button></div></div>
+ <div class="card tracker-card"><table class="table"><thead id="tableHead"></thead><tbody id="tableBody"></tbody></table></div>
+</section>
+
+<section class="page" id="settings">
+ <div class="tracker-top"><div><h2>Settings</h2><p>Make the system yours. Miraculously, software can adapt to humans.</p></div></div>
+ <div class="settings-grid">
+  <div class="card"><div class="head"><div><div class="title">Your habits</div><div class="sub">Edit or expand your habit list.</div></div></div><div id="habitEditor"></div><button class="primary" id="addHabit">+ Add habit</button></div>
+  <div class="card"><div class="head"><div><div class="title">Data and backups</div><div class="sub">Production-ready apps plan for mistakes.</div></div></div><p class="note">Auto-save runs every 15 seconds. Data is also saved when you leave or close the page. Export a backup before switching devices.</p><button class="primary" id="exportBtn">Export backup</button><br><br><input type="file" id="importFile" accept=".json"><br><br><button class="danger" id="resetBtn">Reset all data</button></div>
+ </div>
+</section>
+</main>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA3EJO54Yt-Umf2DOg1CpaqHba1zyafIOY",
+  authDomain: "habitly-5c746.firebaseapp.com",
+  projectId: "habitly-5c746",
+  storageBucket: "habitly-5c746.firebasestorage.app",
+  messagingSenderId: "825848168151",
+  appId: "1:825848168151:web:63e15ae69e860ddd967a92"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DEFAULT_HABITS=["Read for 30 minutes","Workout","Drink enough water","Study / deep work","Go outside","Sleep on time","Practice a skill","Journal"];
+let state={habits:[...DEFAULT_HABITS],data:{},lastSaved:null};
+let currentUser=null;
+let cloudReady=false;
+let now=new Date(),selectedMonth=now.getMonth(),selectedYear=now.getFullYear(),dirty=false;
+
+function normalizeState(raw){
+ return {
+  habits:Array.isArray(raw?.habits)&&raw.habits.length?raw.habits:[...DEFAULT_HABITS],
+  data:raw?.data&&typeof raw.data==="object"?raw.data:{},
+  lastSaved:raw?.lastSaved||null
+ };
+}
+function userDoc(){return currentUser?doc(db,"users",currentUser.uid):null}
+
+async function loadUserFromCloud(user){
+ const ref=doc(db,"users",user.uid);
+ const snap=await getDoc(ref);
+ if(snap.exists()){
+  const cloud=snap.data();
+  state=normalizeState(cloud);
+ }else{
+  // First-time user: the cloud document is the single source of truth.
+  state=normalizeState(null);
+  await setDoc(ref,{
+   profile:{
+    uid:user.uid,
+    displayName:user.displayName||"Habitly user",
+    email:user.email||"",
+    photoURL:user.photoURL||"",
+    createdAt:serverTimestamp()
+   },
+   habits:state.habits,
+   data:state.data,
+   lastSaved:state.lastSaved,
+   updatedAt:serverTimestamp()
+  });
+ }
+ cloudReady=true;
+}
+
+async function saveUserToCloud(){
+ if(!currentUser||!cloudReady||!dirty) return;
+ state.lastSaved=new Date().toISOString();
+ document.getElementById("saveStatus").textContent="● Syncing to cloud";
+ document.getElementById("sideSave").textContent="Syncing to cloud…";
+ try{
+  await setDoc(userDoc(),{
+   profile:{
+    uid:currentUser.uid,
+    displayName:currentUser.displayName||"Habitly user",
+    email:currentUser.email||"",
+    photoURL:currentUser.photoURL||""
+   },
+   habits:state.habits,
+   data:state.data,
+   lastSaved:state.lastSaved,
+   updatedAt:serverTimestamp()
+  },{merge:true});
+  dirty=false;
+  document.getElementById("saveStatus").textContent="● All changes synced";
+  document.getElementById("sideSave").textContent="Cloud synced";
+ }catch(error){
+  console.error("Cloud sync failed:",error);
+  document.getElementById("saveStatus").textContent="● Cloud sync failed";
+  document.getElementById("sideSave").textContent="Cloud sync failed";
+  // The app intentionally does not fall back to local-only storage.
+ }
+}
+
+function queueCloudSave(){
+ // Cloud-only mode: autosave is performed by the 15-second scheduler.
+}
+
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function monthKey(y=selectedYear,m=selectedMonth){return `${y}-${String(m+1).padStart(2,"0")}`}
+function dataFor(y=selectedYear,m=selectedMonth){let k=monthKey(y,m);if(!state.data[k])state.data[k]={};return state.data[k]}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]))}
+function markDirty(){
+ dirty=true;
+ if(cloudReady){
+  document.getElementById("saveStatus").textContent="● Changes waiting to sync";
+  document.getElementById("sideSave").textContent="Autosave in progress";
+ }
+}
+function saveNow(){
+ return saveUserToCloud();
+}
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2200)}
+function getValue(y,m,habit,day){return !!(state.data[monthKey(y,m)]||{})[`${habit}-${day}`]}
+function setValue(y,m,habit,day,value){let d=dataFor(y,m),k=`${habit}-${day}`;if(value)d[k]=1;else delete d[k];markDirty()}
+
+function selectedStats(){
+ let days=daysInMonth(selectedYear,selectedMonth),d=(state.data[monthKey()]||{}),daily=Array(days).fill(0),perHabit=state.habits.map(()=>0);
+ Object.keys(d).forEach(k=>{let [h,day]=k.split("-").map(Number);if(h<state.habits.length&&day>=1&&day<=days){daily[day-1]++;perHabit[h]++}});
+ return {days,daily,perHabit,done:perHabit.reduce((a,b)=>a+b,0)}
+}
+function currentDayStats(){
+ let todayD=now.getDate(),m=now.getMonth(),y=now.getFullYear(),total=state.habits.length;
+ let done=state.habits.reduce((n,_,h)=>n+(getValue(y,m,h,todayD)?1:0),0);return {done,total,pct:total?done/total*100:0}
+}
+function weekStats(){
+ let y=now.getFullYear(),m=now.getMonth(),day=now.getDate(),start=new Date(y,m,day);start.setDate(day-start.getDay()+1);
+ let done=0,total=0;
+ for(let i=0;i<7;i++){let x=new Date(start);x.setDate(start.getDate()+i);let xy=x.getFullYear(),xm=x.getMonth(),xd=x.getDate();total+=state.habits.length;state.habits.forEach((_,h)=>{if(getValue(xy,xm,h,xd))done++})}
+ return {done,total,pct:total?done/total*100:0}
+}
+function bestStreak(){
+ let s=selectedStats(),run=0,best=0;s.daily.forEach(v=>{if(v>0){run++;best=Math.max(best,run)}else run=0});return best
+}
+function donut(id,pct,textId,text,noteId,note){document.getElementById(id).style.setProperty("--p",pct);document.getElementById(textId).textContent=Math.round(pct)+"%";document.getElementById(noteId).textContent=note}
+function renderDashboard(){
+ let s=selectedStats(),day=currentDayStats(),week=weekStats(),monthPct=s.days*state.habits.length?s.done/(s.days*state.habits.length)*100:0;
+ document.getElementById("dateLine").textContent=now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+ document.getElementById("greeting").textContent=now.getHours()<12?"Good morning.":now.getHours()<18?"Good afternoon.":"Good evening.";
+ document.getElementById("monthBadge").textContent=`${MONTHS[selectedMonth]} ${selectedYear}`;
+ document.getElementById("doneCount").textContent=s.done;document.getElementById("dueTodayCount").textContent=Math.max(0,day.total-day.done);
+ document.getElementById("bestStreak").textContent=bestStreak();document.getElementById("weekRate").textContent=Math.round(week.pct)+"%";
+ donut("dailyDonut",day.pct,"dailyPct",0,"dailyNote",`${day.done} of ${day.total} completed`);
+ donut("weeklyDonut",week.pct,"weeklyPct",0,"weeklyNote",`${week.done} of ${week.total} completed`);
+ donut("monthlyDonut",monthPct,"monthlyPct",0,"monthlyNote",`${s.done} of ${s.days*state.habits.length} completed`);
+ let max=Math.max(...s.daily,1);document.getElementById("chart").innerHTML=s.daily.map((v,i)=>`<div class="chart-col" title="Day ${i+1}: ${v} completed"><div class="chart-bar" style="height:${Math.max(4,v/max*100)}%"></div><span class="day-label">${(i+1)%5===0?i+1:""}</span></div>`).join("");
+ renderDueToday(day);
+ let perf=document.getElementById("performance");perf.innerHTML=state.habits.map((h,i)=>{let p=s.days?Math.round(s.perHabit[i]/s.days*100):0;return `<div class="habit-line"><div><small>${escapeHTML(h)}</small><div class="track"><div class="fill" style="width:${p}%"></div></div></div><b>${p}%</b></div>`}).join("");
+ let order=[...state.habits.keys()].sort((a,b)=>s.perHabit[b]-s.perHabit[a]).slice(0,5);
+ document.getElementById("topHabits").innerHTML=order.map((i,n)=>`<div class="habit-line"><div><small>${n+1}. ${escapeHTML(state.habits[i])}</small><div class="track"><div class="fill" style="width:${s.days?s.perHabit[i]/s.days*100:0}%"></div></div></div><b>${s.perHabit[i]}×</b></div>`).join("");
+}
+function renderDueToday(day){
+ let d=now.getDate(),m=now.getMonth(),y=now.getFullYear(),box=document.getElementById("dueList");
+ box.innerHTML=state.habits.map((h,i)=>{
+  let done=getValue(y,m,i,d);
+  return `<label class="due-item ${done?"done":""}"><div class="due-left"><input class="due-check" type="checkbox" data-today="${i}" ${done?"checked":""}><span>${escapeHTML(h)}</span></div><small>${done?"Done ✓":"Due today"}</small></label>`
+ }).join("");
+ let remaining=Math.max(0,day.total-day.done);
+ document.getElementById("aquariumText").textContent=remaining?`${remaining} habit${remaining>1?"s":""} still due today`:"Everything completed. The fish approve.";
+}
+function renderSelectors(){
+ let ms=document.getElementById("monthSelect"),ys=document.getElementById("yearSelect");ms.innerHTML=MONTHS.map((m,i)=>`<option value="${i}" ${i===selectedMonth?"selected":""}>${m}</option>`).join("");ys.innerHTML=[selectedYear-1,selectedYear,selectedYear+1,selectedYear+2].map(y=>`<option value="${y}" ${y===selectedYear?"selected":""}>${y}</option>`).join("");
+ ms.onchange=()=>{selectedMonth=+ms.value;renderAll()};ys.onchange=()=>{selectedYear=+ys.value;renderAll()};
+}
+function renderTracker(){
+ renderSelectors();
+ let days=daysInMonth(selectedYear,selectedMonth),head="<tr><th>Habit</th>";
+ for(let d=1;d<=days;d++){
+  let date=new Date(selectedYear,selectedMonth,d);
+  let cls=(date.getDay()===0||date.getDay()===6?"weekend ":"")+
+   (selectedYear===now.getFullYear()&&selectedMonth===now.getMonth()&&d===now.getDate()?"today-col":"");
+  head+=`<th class="${cls}">${d}</th>`;
+ }
+ head+="<th>Month</th></tr>";
+ document.getElementById("tableHead").innerHTML=head;
+ let body="",s=selectedStats();
+ state.habits.forEach((h,i)=>{
+  body+=`<tr><td>${escapeHTML(h)}</td>`;
+  for(let d=1;d<=days;d++){
+   let date=new Date(selectedYear,selectedMonth,d),checked=getValue(selectedYear,selectedMonth,i,d);
+   body+=`<td class="${date.getDay()===0||date.getDay()===6?"weekend":""}"><input class="check" type="checkbox" data-h="${i}" data-d="${d}" ${checked?"checked":""}></td>`;
+  }
+  body+=`<td class="rate">${Math.round(s.perHabit[i]/days*100)}%</td></tr>`;
+ });
+ document.getElementById("tableBody").innerHTML=body;
+}
+function renderSettings(){
+ let box=document.getElementById("habitEditor");
+ box.innerHTML=state.habits.map((h,i)=>`<input class="habit-input" data-i="${i}" value="${escapeHTML(h)}">`).join("");
+}
+
+let selectedHistoryDay = null;
+
+function renderMonthHistory(){
+ let s=selectedStats(), days=s.days;
+ if(selectedHistoryDay===null || selectedHistoryDay>days) selectedHistoryDay=(selectedYear===now.getFullYear()&&selectedMonth===now.getMonth())?now.getDate():1;
+ document.getElementById("historyMonthLabel").textContent=`${MONTHS[selectedMonth]} ${selectedYear}`;
+ // Scale every day against the TOTAL number of habits, not the busiest day.
+ // Otherwise, a day with 1 completed habit can incorrectly appear as a full-height bar.
+ let totalHabits=Math.max(state.habits.length,1);
+ let chartHeight=235;
+ let chart=document.getElementById("historyChart");
+ chart.innerHTML=s.daily.map((count,i)=>{
+   let day=i+1;
+   // Directly map completed-task count to a fixed pixel height.
+   // 0 tasks = 5px, 1/8 = ~29px, 2/8 = ~59px ... 8/8 = 235px.
+   let barHeight = count === 0 ? 5 : Math.max(8, Math.round((count / totalHabits) * chartHeight));
+   let pct=Math.round((count/totalHabits)*100);
+   let isSelected=day===selectedHistoryDay;
+   return `<div class="history-day" title="${MONTHS[selectedMonth]} ${day}: ${count}/${totalHabits} habits completed (${Math.round(pct)}%)">
+     <div class="history-bar-wrap">
+      <button class="history-bar ${isSelected?"selected":""}" data-history-day="${day}" style="height:${barHeight}px" aria-label="Show details for day ${day}"></button>
+     </div>
+     <span class="history-label">${day}</span>
+   </div>`;
+ }).join("");
+
+ renderDayDetails(selectedHistoryDay);
+}
+
+function renderDayDetails(day){
+ let completed=[],missed=[];
+ state.habits.forEach((habit,index)=>{
+   (getValue(selectedYear,selectedMonth,index,day)?completed:missed).push(habit);
+ });
+ let total=state.habits.length, pct=total?Math.round(completed.length/total*100):0;
+ let dateLabel=new Date(selectedYear,selectedMonth,day).toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ const list=(items,type)=>items.length?items.map(h=>`<div class="detail-habit"><span class="detail-dot ${type}"></span>${escapeHTML(h)}</div>`).join(""):`<div class="empty-day">Nothing here.</div>`;
+ document.getElementById("dayDetails").innerHTML=`
+   <div class="day-details-head">
+    <div><b>${dateLabel}</b><div class="sub">A complete record of that day's routine.</div></div>
+    <span class="day-score">${completed.length}/${total} completed · ${pct}%</span>
+   </div>
+   <div class="day-detail-grid">
+    <div class="day-detail-col"><div class="day-detail-title">✓ What you completed</div>${list(completed,"done")}</div>
+    <div class="day-detail-col"><div class="day-detail-title">○ What you missed</div>${list(missed,"missed")}</div>
+   </div>`;
+}
+
+function activePageId(){
+ const active=document.querySelector(".page.active");
+ return active?active.id:"dashboard";
+}
+
+let renderQueued=false;
+let pendingScope="full";
+
+function renderActive(scope="full"){
+ const page=activePageId();
+ if(scope==="full" || page==="dashboard"){renderDashboard();renderMonthHistory()}
+ if((scope==="full" && page==="tracker") || scope==="tracker")renderTracker();
+ if((scope==="full" && page==="settings") || scope==="settings")renderSettings();
+}
+
+function scheduleRender(scope="full"){
+ if(scope==="full")pendingScope="full";
+ else if(pendingScope!=="full")pendingScope=scope;
+ if(renderQueued)return;
+ renderQueued=true;
+ requestAnimationFrame(()=>{
+  renderQueued=false;
+  const scopeToRender=pendingScope;
+  pendingScope="full";
+  renderActive(scopeToRender);
+ });
+}
+function renderAll(){scheduleRender("full")}
+
+// Delegated events replace hundreds of short-lived listeners.
+document.getElementById("dueList").addEventListener("change",e=>{
+ const x=e.target.closest("[data-today]");if(!x)return;
+ setValue(now.getFullYear(),now.getMonth(),+x.dataset.today,now.getDate(),x.checked);
+ scheduleRender("dashboard");
+});
+
+document.getElementById("tableBody").addEventListener("change",e=>{
+ const c=e.target.closest(".check");if(!c)return;
+ setValue(selectedYear,selectedMonth,+c.dataset.h,+c.dataset.d,c.checked);
+ scheduleRender("tracker");
+});
+
+document.getElementById("historyChart").addEventListener("click",e=>{
+ const bar=e.target.closest("[data-history-day]");if(!bar)return;
+ selectedHistoryDay=+bar.dataset.historyDay;
+ renderMonthHistory();
+});
+
+document.getElementById("habitEditor").addEventListener("change",e=>{
+ const x=e.target.closest(".habit-input");if(!x)return;
+ state.habits[+x.dataset.i]=x.value.trim()||"Unnamed habit";
+ markDirty();scheduleRender("settings");
+});
+
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("[data-page]").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");
+ document.getElementById(b.dataset.page).classList.add("active");
+ renderActive(b.dataset.page);
+});
+
+document.getElementById("todayBtn").onclick=()=>{
+ selectedMonth=now.getMonth();selectedYear=now.getFullYear();selectedHistoryDay=now.getDate();
+ scheduleRender("full");
+};
+
+document.getElementById("addHabit").onclick=()=>{
+ state.habits.push("New habit");markDirty();scheduleRender("full");toast("New habit added")
+};
+
+document.getElementById("exportBtn").onclick=()=>{
+ saveNow();
+ let a=document.createElement("a"),blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+ a.href=URL.createObjectURL(blob);a.download="habitly-backup.json";a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("Backup exported")
+};
+
+document.getElementById("importFile").onchange=e=>{
+ let f=e.target.files[0];if(!f)return;
+ let r=new FileReader();
+ r.onload=()=>{try{
+  let x=JSON.parse(r.result);if(!Array.isArray(x.habits)||!x.data)throw Error();
+  state=x;dirty=true;saveNow();scheduleRender("full");toast("Backup restored")
+ }catch{toast("That file isn't a valid Habitly backup")}};
+ r.readAsText(f)
+};
+
+document.getElementById("resetBtn").onclick=()=>{
+ if(confirm("Delete every habit and every completion record?")){
+  state={habits:[...DEFAULT_HABITS],data:{}};
+  dirty=true;saveNow();scheduleRender("full");toast("Everything reset")
+ }
+};
+// Required cloud autosave cadence: every 15 seconds.
+setInterval(()=>{ if(dirty) saveNow(); },15000);
+window.addEventListener("pagehide",()=>{ if(dirty) saveNow(); });
+
+let authReady=false;
+const loginScreen=document.getElementById("loginScreen");
+const appShell=document.getElementById("appShell");
+const googleLogin=document.getElementById("googleLogin");
+const googleLoginText=document.getElementById("googleLoginText");
+const authError=document.getElementById("authError");
+
+function setGoogleButtonLoading(loading){
+ googleLogin.disabled=loading;
+ googleLoginText.textContent=loading?"Opening Google…":"Continue with Google";
+}
+
+const retryCloud=document.getElementById("retryCloud");
+
+function friendlyAuthError(code){
+ const map={
+  "auth/popup-closed-by-user":"Sign-in window was closed before finishing. Please try again.",
+  "auth/cancelled-popup-request":"Sign-in window was closed before finishing. Please try again.",
+  "auth/unauthorized-domain":"This site's domain isn't authorized for sign-in yet. In the Firebase console, go to Authentication → Settings → Authorized domains and add this domain.",
+  "auth/operation-not-allowed":"Google sign-in isn't enabled for this project yet. In the Firebase console, go to Authentication → Sign-in method and enable Google."
+ };
+ return map[code]||"Google sign-in could not start. Please try again.";
+}
+
+function friendlyCloudError(code,uid){
+ const map={
+  "permission-denied":`Firestore is blocking access to your data (permission-denied). In the Firebase console, open Firestore Database → Rules and allow a signed-in user to read/write their own document, e.g.:\n\nmatch /users/{userId} {\n  allow read, write: if request.auth != null && request.auth.uid == userId;\n}`,
+  "unavailable":"Could not reach the cloud database. Check your connection and tap retry.",
+  "failed-precondition":"Firestore hasn't been created for this project yet. In the Firebase console, open Firestore Database and click Create database.",
+  "not-found":"Firestore hasn't been created for this project yet. In the Firebase console, open Firestore Database and click Create database."
+ };
+ return map[code]||`Couldn't load your Habitly account (${code}). Tap retry, or double-check your Firebase setup.`;
+}
+
+googleLogin.addEventListener("click",async()=>{
+ authError.textContent="";
+ retryCloud.style.display="none";
+ setGoogleButtonLoading(true);
+ try{
+  await signInWithPopup(auth,googleProvider);
+  // onAuthStateChanged picks this up from here and loads the account.
+ }catch(error){
+  console.error("Google sign-in error:",error);
+  if(error.code==="auth/popup-blocked"||error.code==="auth/operation-not-supported-in-this-environment"){
+   try{
+    await signInWithRedirect(auth,googleProvider);
+    return;
+   }catch(redirectError){
+    console.error("Google redirect fallback error:",redirectError);
+    authError.textContent=friendlyAuthError(redirectError.code);
+   }
+  }else{
+   authError.textContent=friendlyAuthError(error.code);
+  }
+  setGoogleButtonLoading(false);
+ }
+});
+
+retryCloud.addEventListener("click",()=>{
+ if(currentUser) enterApp(currentUser);
+});
+
+document.getElementById("logoutBtn").addEventListener("click",async()=>{
+ try{
+  await signOut(auth);
+ }catch(error){
+  console.error("Logout error:",error);
+  toast("Could not log out. Please try again.");
+ }
+});
+
+function updateUserUI(user){
+ document.getElementById("userName").textContent=user.displayName||user.email||"Habitly user";
+ const avatar=document.getElementById("userAvatar");
+ if(user.photoURL){
+  avatar.innerHTML=`<img src="${escapeHTML(user.photoURL)}" alt="">`;
+ }else{
+  avatar.textContent=(user.displayName||user.email||"H").trim().charAt(0).toUpperCase();
+ }
+}
+
+// Loading cloud data and rendering the UI are kept as two separate try/catch
+// blocks. A genuine cloud/Firestore failure keeps the user signed in to
+// Firebase Auth (so retrying doesn't force them through Google's account
+// chooser again) and shows a clear message instead of silently signing out.
+// A rendering bug must never be mistaken for an auth/cloud failure and must
+// never sign the user out — that mismatch was why the login screen
+// sometimes stayed up even after the account showed as authenticated.
+async function enterApp(user){
+ setGoogleButtonLoading(true);
+ retryCloud.style.display="none";
+ authError.textContent="Loading your Habitly account…";
+ try{
+  await loadUserFromCloud(user);
+  cloudReady=true;
+ }catch(error){
+  console.error("Cloud account error:",error);
+  cloudReady=false;
+  authError.textContent=friendlyCloudError(error?.code||"unknown-error",user.uid);
+  retryCloud.style.display="inline-block";
+  setGoogleButtonLoading(false);
+  return;
+ }
+ try{
+  updateUserUI(user);
+  renderDashboard();renderMonthHistory();renderTracker();renderSettings();
+ }catch(renderError){
+  console.error("Render error (non-fatal, staying signed in):",renderError);
+ }
+ loginScreen.style.display="none";
+ appShell.style.display="block";
+ authError.textContent="";
+ retryCloud.style.display="none";
+ document.getElementById("saveStatus").textContent="● Cloud account connected";
+ document.getElementById("sideSave").textContent="Cloud synced";
+ setGoogleButtonLoading(false);
+}
+
+onAuthStateChanged(auth,user=>{
+ authReady=true;
+ if(user){
+  currentUser=user;
+  enterApp(user);
+ }else{
+  currentUser=null;
+  cloudReady=false;
+  appShell.style.display="none";
+  loginScreen.style.display="grid";
+  retryCloud.style.display="none";
+  setGoogleButtonLoading(false);
+ }
+});
+
+// Catches errors from the signInWithRedirect fallback path.
+getRedirectResult(auth).catch(error=>{
+ console.error("Google redirect result error:",error);
+ authError.textContent=friendlyAuthError(error.code);
+ setGoogleButtonLoading(false);
+});
+
+// The dashboard stays inaccessible until Firebase Auth AND Firestore are both ready.
+renderDashboard();renderMonthHistory();
+</script>
+</body>
+</html>
